@@ -13,8 +13,7 @@ export const apiLimiter = rateLimit({
   handler: (req, res) => {
     res.status(429).json({
       success: false,
-      error: 'Too many requests, please try again later',
-      retryAfter: Math.round(req.rateLimit.msBeforeNext / 1000)
+      error: 'Too many requests, please try again later'
     })
   }
 })
@@ -33,8 +32,7 @@ export const authLimiter = rateLimit({
   handler: (req, res) => {
     res.status(429).json({
       success: false,
-      error: 'Too many authentication attempts, please try again later',
-      retryAfter: Math.round(req.rateLimit.msBeforeNext / 1000)
+      error: 'Too many authentication attempts, please try again later'
     })
   }
 })
@@ -52,8 +50,7 @@ export const dataEntryLimiter = rateLimit({
   handler: (req, res) => {
     res.status(429).json({
       success: false,
-      error: 'Too many data entries, please slow down',
-      retryAfter: Math.round(req.rateLimit.msBeforeNext / 1000)
+      error: 'Too many data entries, please slow down'
     })
   }
 })
@@ -71,8 +68,7 @@ export const exportLimiter = rateLimit({
   handler: (req, res) => {
     res.status(429).json({
       success: false,
-      error: 'Too many export requests, please try again later',
-      retryAfter: Math.round(req.rateLimit.msBeforeNext / 1000)
+      error: 'Too many export requests, please try again later'
     })
   }
 })

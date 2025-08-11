@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import * as jwt from 'jsonwebtoken'
 import { UserRole } from '@prisma/client'
 import prisma from '../config/database'
 import { AuthRequest } from '../types'
@@ -61,6 +61,7 @@ export const register = asyncHandler(async (req: AuthRequest, res: Response) => 
     data: user,
     message: 'User created successfully'
   })
+  return
 })
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
@@ -97,14 +98,17 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   }
 
   // Generate JWT token
-  const token = jwt.sign(
+  const jwtSecret = process.env.JWT_SECRET as string
+  const jwtExpiresIn = process.env.JWT_EXPIRES_IN || '7d'
+  
+  const token = (jwt as any).sign(
     { 
       userId: user.id,
       email: user.email,
       role: user.role
     },
-    process.env.JWT_SECRET!,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    jwtSecret,
+    { expiresIn: jwtExpiresIn }
   )
 
   // Log audit action
@@ -127,6 +131,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     },
     message: 'Login successful'
   })
+  return
 })
 
 export const getProfile = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -162,6 +167,7 @@ export const getProfile = asyncHandler(async (req: AuthRequest, res: Response) =
     success: true,
     data: user
   })
+  return
 })
 
 export const updateProfile = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -210,6 +216,7 @@ export const updateProfile = asyncHandler(async (req: AuthRequest, res: Response
     data: updatedUser,
     message: 'Profile updated successfully'
   })
+  return
 })
 
 export const changePassword = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -263,6 +270,7 @@ export const changePassword = asyncHandler(async (req: AuthRequest, res: Respons
     success: true,
     message: 'Password changed successfully'
   })
+  return
 })
 
 export const refreshToken = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -274,14 +282,17 @@ export const refreshToken = asyncHandler(async (req: AuthRequest, res: Response)
   }
 
   // Generate new JWT token
-  const token = jwt.sign(
+  const jwtSecret = process.env.JWT_SECRET as string
+  const jwtExpiresIn = process.env.JWT_EXPIRES_IN || '7d'
+  
+  const token = (jwt as any).sign(
     { 
       userId: req.user.id,
       email: req.user.email,
       role: req.user.role
     },
-    process.env.JWT_SECRET!,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    jwtSecret,
+    { expiresIn: jwtExpiresIn }
   )
 
   res.json({
@@ -289,4 +300,5 @@ export const refreshToken = asyncHandler(async (req: AuthRequest, res: Response)
     data: { token },
     message: 'Token refreshed successfully'
   })
+  return
 })

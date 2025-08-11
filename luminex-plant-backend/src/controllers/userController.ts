@@ -16,7 +16,6 @@ export const userController = {
       
       if (search) {
         where.OR = [
-          { username: { contains: search as string, mode: 'insensitive' } },
           { email: { contains: search as string, mode: 'insensitive' } },
           { firstName: { contains: search as string, mode: 'insensitive' } },
           { lastName: { contains: search as string, mode: 'insensitive' } }
@@ -34,13 +33,11 @@ export const userController = {
           orderBy: { createdAt: 'desc' },
           select: {
             id: true,
-            username: true,
             email: true,
             firstName: true,
             lastName: true,
             role: true,
             isActive: true,
-            lastLogin: true,
             createdAt: true,
             updatedAt: true
           }
@@ -80,18 +77,16 @@ export const userController = {
         where: { id },
         select: {
           id: true,
-          username: true,
           email: true,
           firstName: true,
           lastName: true,
           role: true,
           isActive: true,
-          lastLogin: true,
           createdAt: true,
           updatedAt: true,
           _count: {
             select: {
-              batchesCreated: true,
+              createdBatches: true,
               measurements: true
             }
           }
@@ -130,22 +125,17 @@ export const userController = {
         })
       }
 
-      const { username, email, password, firstName, lastName, role } = req.body
+      const { email, password, firstName, lastName, role } = req.body
 
       // Check if user already exists
-      const existingUser = await prisma.user.findFirst({
-        where: {
-          OR: [
-            { username: { equals: username, mode: 'insensitive' } },
-            { email: { equals: email, mode: 'insensitive' } }
-          ]
-        }
+      const existingUser = await prisma.user.findUnique({
+        where: { email }
       })
 
       if (existingUser) {
         return res.status(400).json({
           success: false,
-          message: 'User with this username or email already exists'
+          message: 'User with this email already exists'
         })
       }
 
@@ -154,7 +144,6 @@ export const userController = {
 
       const user = await prisma.user.create({
         data: {
-          username,
           email,
           password: hashedPassword,
           firstName,
@@ -163,7 +152,6 @@ export const userController = {
         },
         select: {
           id: true,
-          username: true,
           email: true,
           firstName: true,
           lastName: true,
@@ -201,7 +189,7 @@ export const userController = {
       }
 
       const { id } = req.params
-      const { username, email, firstName, lastName, role, isActive } = req.body
+      const { email, firstName, lastName, role, isActive } = req.body
 
       // Check if user exists
       const existingUser = await prisma.user.findUnique({
@@ -215,18 +203,13 @@ export const userController = {
         })
       }
 
-      // Check for username/email conflicts
-      if (username || email) {
+      // Check for email conflicts
+      if (email) {
         const conflict = await prisma.user.findFirst({
           where: {
             AND: [
               { id: { not: id } },
-              {
-                OR: [
-                  ...(username ? [{ username: { equals: username, mode: 'insensitive' } }] : []),
-                  ...(email ? [{ email: { equals: email, mode: 'insensitive' } }] : [])
-                ]
-              }
+              { email: { equals: email, mode: 'insensitive' } }
             ]
           }
         })
@@ -234,7 +217,7 @@ export const userController = {
         if (conflict) {
           return res.status(400).json({
             success: false,
-            message: 'User with this username or email already exists'
+            message: 'User with this email already exists'
           })
         }
       }
@@ -242,7 +225,6 @@ export const userController = {
       const user = await prisma.user.update({
         where: { id },
         data: {
-          ...(username && { username }),
           ...(email && { email }),
           ...(firstName && { firstName }),
           ...(lastName && { lastName }),
@@ -251,13 +233,11 @@ export const userController = {
         },
         select: {
           id: true,
-          username: true,
           email: true,
           firstName: true,
           lastName: true,
           role: true,
           isActive: true,
-          lastLogin: true,
           createdAt: true,
           updatedAt: true
         }
@@ -288,7 +268,7 @@ export const userController = {
         include: {
           _count: {
             select: {
-              batchesCreated: true,
+              createdBatches: true,
               measurements: true
             }
           }
@@ -303,7 +283,7 @@ export const userController = {
       }
 
       // Check if user has associated data
-      if (user._count.batchesCreated > 0 || user._count.measurements > 0) {
+      if (user._count.createdBatches > 0 || user._count.measurements > 0) {
         return res.status(400).json({
           success: false,
           message: 'Cannot delete user with associated batches or measurements. Please deactivate the user instead.'

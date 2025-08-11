@@ -99,8 +99,7 @@ export const zoneController = {
                     select: {
                       id: true,
                       firstName: true,
-                      lastName: true,
-                      username: true
+                      lastName: true
                     }
                   }
                 }
@@ -130,7 +129,8 @@ export const zoneController = {
       }
 
       // Calculate occupancy
-      const totalOccupied = zone.beds.reduce((sum: number, bed: any) => {
+      const zoneWithBeds = zone as any; // Type assertion to access included relations
+      const totalOccupied = zoneWithBeds.beds.reduce((sum: number, bed: any) => {
         return sum + bed.batches.reduce((bedSum: number, batch: any) => bedSum + batch.currentQty, 0)
       }, 0)
 

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Prisma } from '@prisma/client'
 import { validationResult } from 'express-validator'
 
 const prisma = new PrismaClient()
@@ -120,8 +120,8 @@ export const speciesController = {
       const existingSpecies = await prisma.species.findFirst({
         where: {
           OR: [
-            { name: { equals: name, mode: 'insensitive' } },
-            ...(scientificName ? [{ scientificName: { equals: scientificName, mode: 'insensitive' } }] : [])
+            { name: { equals: name } },
+            ...(scientificName ? [{ scientificName: { equals: scientificName } }] : [])
           ]
         }
       })
@@ -191,8 +191,8 @@ export const speciesController = {
               { id: { not: id } },
               {
                 OR: [
-                  ...(name ? [{ name: { equals: name, mode: 'insensitive' } }] : []),
-                  ...(scientificName ? [{ scientificName: { equals: scientificName, mode: 'insensitive' } }] : [])
+                  ...(name ? [{ name: { equals: name } }] : []),
+                  ...(scientificName ? [{ scientificName: { equals: scientificName } }] : [])
                 ]
               }
             ]

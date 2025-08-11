@@ -200,7 +200,7 @@ export const analyticsController = {
         stages.map(async stage => {
           const batchCount = await prisma.batch.count({
             where: { 
-              stage,
+              stage: stage as any,
               status: { in: ['CREATED', 'IN_PROGRESS'] }
             }
           })
@@ -208,7 +208,7 @@ export const analyticsController = {
           const plantCount = await prisma.batch.aggregate({
             _sum: { currentQty: true },
             where: { 
-              stage,
+              stage: stage as any,
               status: { in: ['CREATED', 'IN_PROGRESS'] }
             }
           }).then((result: any) => result._sum.currentQty || 0)

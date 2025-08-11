@@ -48,7 +48,7 @@ export const measurementController = {
                 id: true,
                 firstName: true,
                 lastName: true,
-                username: true
+                email: true
               }
             }
           }
@@ -99,7 +99,7 @@ export const measurementController = {
               id: true,
               firstName: true,
               lastName: true,
-              username: true
+              email: true
             }
           }
         }
@@ -183,7 +183,7 @@ export const measurementController = {
               id: true,
               firstName: true,
               lastName: true,
-              username: true
+              email: true
             }
           }
         }
@@ -270,7 +270,7 @@ export const measurementController = {
               id: true,
               firstName: true,
               lastName: true,
-              username: true
+              email: true
             }
           }
         }
@@ -349,7 +349,7 @@ export const measurementController = {
               id: true,
               firstName: true,
               lastName: true,
-              username: true
+              email: true
             }
           }
         }
@@ -440,7 +440,7 @@ export const measurementController = {
               id: true,
               firstName: true,
               lastName: true,
-              username: true
+              email: true
             }
           }
         }

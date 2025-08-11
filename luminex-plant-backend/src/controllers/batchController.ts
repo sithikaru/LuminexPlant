@@ -52,7 +52,7 @@ export const batchController = {
                 id: true,
                 firstName: true,
                 lastName: true,
-                username: true
+                email: true
               }
             },
             measurements: {
@@ -106,7 +106,7 @@ export const batchController = {
               id: true,
               firstName: true,
               lastName: true,
-              username: true
+              email: true
             }
           },
           measurements: {
@@ -117,7 +117,7 @@ export const batchController = {
                   id: true,
                   firstName: true,
                   lastName: true,
-                  username: true
+                  email: true
                 }
               }
             }
@@ -264,7 +264,7 @@ export const batchController = {
                 id: true,
                 firstName: true,
                 lastName: true,
-                username: true
+                email: true
               }
             }
           }
@@ -357,7 +357,7 @@ export const batchController = {
               id: true,
               firstName: true,
               lastName: true,
-              username: true
+              email: true
             }
           }
         }
