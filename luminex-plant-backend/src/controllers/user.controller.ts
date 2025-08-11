@@ -76,7 +76,7 @@ export const getUsers = asyncHandler(async (req: AuthRequest, res: Response) => 
   })
 })
 
-export const getUser = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const getUser = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
   const { id } = req.params
 
   const user = await prisma.user.findUnique({
@@ -101,10 +101,11 @@ export const getUser = asyncHandler(async (req: AuthRequest, res: Response) => {
   })
 
   if (!user) {
-    return res.status(404).json({
+    res.status(404).json({
       success: false,
       error: 'User not found'
     })
+    return
   }
 
   res.json({
@@ -113,7 +114,7 @@ export const getUser = asyncHandler(async (req: AuthRequest, res: Response) => {
   })
 })
 
-export const createUser = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const createUser = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
   const { email, password, firstName, lastName, role } = req.body
 
   // Check if user exists
@@ -122,10 +123,11 @@ export const createUser = asyncHandler(async (req: AuthRequest, res: Response) =
   })
 
   if (existingUser) {
-    return res.status(409).json({
+    res.status(409).json({
       success: false,
       error: 'User with this email already exists'
     })
+    return
   }
 
   // Hash password
@@ -169,7 +171,7 @@ export const createUser = asyncHandler(async (req: AuthRequest, res: Response) =
   })
 })
 
-export const updateUser = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const updateUser = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
   const { id } = req.params
   const { firstName, lastName, role, isActive } = req.body
 

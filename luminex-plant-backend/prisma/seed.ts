@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole, PathwayType, BatchStatus, BatchStage } from '@prisma/client'
+import { PrismaClient, UserRole, PathwayType, BatchStatus, BatchStage, TaskType, NotificationType } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
@@ -376,28 +376,28 @@ async function main() {
   const taskData = [
     {
       userId: fieldOfficer.id,
-      type: 'MEASUREMENT',
+      type: TaskType.MEASUREMENT,
       title: 'Weekly Measurement - Rubber Trees',
       description: 'Conduct weekly growth measurements for rubber tree batches in Zone B',
       dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // Due in 2 days
     },
     {
       userId: fieldOfficer.id,
-      type: 'STAGE_TRANSITION',
+      type: TaskType.STAGE_TRANSITION,
       title: 'Move Avocado Seedlings',
       description: 'Transfer avocado seedlings from shade area to growing zone',
       dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // Due in 5 days
     },
     {
       userId: manager.id,
-      type: 'INSPECTION',
+      type: TaskType.INSPECTION,
       title: 'Zone C Quality Check',
       description: 'Inspect all batches in Zone C for readiness assessment',
       dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // Due tomorrow
     },
     {
       userId: fieldOfficer.id,
-      type: 'MAINTENANCE',
+      type: TaskType.MAINTENANCE,
       title: 'Bed Maintenance - Zone A',
       description: 'General maintenance and cleaning of beds in Zone A',
       dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Due in 1 week
@@ -413,25 +413,25 @@ async function main() {
   const notificationData = [
     {
       userId: manager.id,
-      type: 'BATCH_READY',
+      type: NotificationType.BATCH_READY,
       title: 'Batch Ready for Delivery',
       message: 'Premium Coconut Palms (PU250811001) is ready for delivery',
     },
     {
       userId: fieldOfficer.id,
-      type: 'MEASUREMENT_DUE',
+      type: NotificationType.MEASUREMENT_DUE,
       title: 'Measurement Due',
       message: 'Weekly measurements are due for 3 batches in Zone B',
     },
     {
       userId: manager.id,
-      type: 'TASK_ASSIGNED',
+      type: NotificationType.TASK_ASSIGNED,
       title: 'New Task Assigned',
       message: 'Zone C Quality Check has been assigned to you',
     },
     {
       userId: fieldOfficer.id,
-      type: 'SYSTEM_ALERT',
+      type: NotificationType.SYSTEM_ALERT,
       title: 'Low Bed Capacity',
       message: 'Zone A beds are approaching maximum capacity',
     },
