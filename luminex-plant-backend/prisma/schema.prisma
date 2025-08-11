@@ -1,0 +1,239 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      UserRole
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  createdBatches    Batch[]       @relation("BatchCreatedBy")
+  measurements      Measurement[]
+  auditLogs         AuditLog[]
+  notifications     Notification[]
+  tasks             Task[]
+
+  @@map("users")
+}
+
+model Species {
+  id             String  @id @default(cuid())
+  name           String  @unique
+  scientificName String?
+  targetGirth    Float   // in cm
+  targetHeight   Float   // in cm
+  isActive       Boolean @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  batches Batch[]
+
+  @@map("species")
+}
+
+model Zone {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  capacity  Int
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  beds    Bed[]
+  batches Batch[]
+
+  @@map("zones")
+}
+
+model Bed {
+  id        String   @id @default(cuid())
+  name      String
+  capacity  Int
+  occupied  Int      @default(0)
+  zoneId    String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  zone    Zone    @relation(fields: [zoneId], references: [id])
+  batches Batch[]
+
+  @@unique([name, zoneId])
+  @@map("beds")
+}
+
+model Batch {
+  id           String      @id @default(cuid())
+  batchNumber  String      @unique
+  customName   String?
+  pathway      PathwayType
+  speciesId    String
+  initialQty   Int
+  currentQty   Int
+  status       BatchStatus @default(CREATED)
+  stage        BatchStage  @default(INITIAL)
+  isReady      Boolean     @default(false)
+  readyDate    DateTime?
+  lossReason   String?
+  lossQty      Int         @default(0)
+  createdById  String
+  zoneId       String?
+  bedId        String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  // Relations
+  species      Species       @relation(fields: [speciesId], references: [id])
+  createdBy    User          @relation("BatchCreatedBy", fields: [createdById], references: [id])
+  zone         Zone?         @relation(fields: [zoneId], references: [id])
+  bed          Bed?          @relation(fields: [bedId], references: [id])
+  measurements Measurement[]
+  stageHistory StageHistory[]
+  auditLogs    AuditLog[]
+
+  @@map("batches")
+}
+
+model Measurement {
+  id        String   @id @default(cuid())
+  batchId   String
+  userId    String
+  girth     Float    // in cm
+  height    Float    // in cm
+  sampleSize Int     @default(1)
+  notes     String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  batch Batch @relation(fields: [batchId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@map("measurements")
+}
+
+model StageHistory {
+  id        String     @id @default(cuid())
+  batchId   String
+  fromStage BatchStage?
+  toStage   BatchStage
+  quantity  Int
+  notes     String?
+  createdAt DateTime   @default(now())
+
+  // Relations
+  batch Batch @relation(fields: [batchId], references: [id])
+
+  @@map("stage_history")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  batchId   String?
+  action    String
+  oldValues Json?
+  newValues Json?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user  User   @relation(fields: [userId], references: [id])
+  batch Batch? @relation(fields: [batchId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  userId      String
+  type        TaskType
+  title       String
+  description String
+  dueDate     DateTime
+  isCompleted Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  completedAt DateTime?
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("tasks")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  MANAGER
+  FIELD_OFFICER
+}
+
+enum PathwayType {
+  PURCHASING
+  SEED_GERMINATION
+  CUTTING_GERMINATION
+  OUT_SOURCING
+}
+
+enum BatchStatus {
+  CREATED
+  IN_PROGRESS
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+enum BatchStage {
+  INITIAL
+  PROPAGATION
+  SHADE_60
+  SHADE_80
+  GROWING
+  HARDENING
+  RE_POTTING
+  PHYTOSANITARY
+}
+
+enum NotificationType {
+  MEASUREMENT_DUE
+  BATCH_READY
+  TASK_ASSIGNED
+  SYSTEM_ALERT
+}
+
+enum TaskType {
+  MEASUREMENT
+  STAGE_TRANSITION
+  MAINTENANCE
+  INSPECTION
+}
