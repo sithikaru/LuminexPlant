@@ -16,8 +16,8 @@ import {
 
 const router = Router()
 
-// Public routes (with auth rate limiting)
-router.post('/login', authLimiter, validateUserLogin, login)
+// Public routes (with auth rate limiting disabled for development)
+router.post('/login', validateUserLogin, login)
 
 // Protected routes (require authentication)
 router.use(authenticateToken)

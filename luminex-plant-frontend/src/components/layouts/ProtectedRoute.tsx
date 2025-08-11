@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAuthStore } from '@/store/authStore'
 import { UserRole } from '@/types'
@@ -19,7 +19,16 @@ export default function ProtectedRoute({
 }: ProtectedRouteProps) {
   const router = useRouter()
   const pathname = usePathname()
-  const { isAuthenticated, user, isLoading, hasPermission } = useAuthStore()
+  const { isAuthenticated, user, isLoading, isHydrated, hasPermission } = useAuthStore()
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  // Wait a bit for hydration to complete
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsInitialized(true)
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     // Allow access to auth pages when not authenticated
@@ -32,7 +41,12 @@ export default function ProtectedRoute({
     }
 
     // Protect other routes
-    if (!isAuthenticated && !isLoading) {
+    if (!isHydrated || !isInitialized || isLoading) {
+      // Still loading, don't redirect yet
+      return
+    }
+
+    if (!isAuthenticated) {
       router.push(fallbackPath)
       return
     }
@@ -72,6 +86,15 @@ export default function ProtectedRoute({
   // For auth pages, show content regardless of authentication state
   if (pathname.startsWith('/auth/')) {
     return <>{children}</>
+  }
+
+  // Show loading state while hydrating or loading
+  if (!isHydrated || !isInitialized || isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    )
   }
 
   // For protected routes, only show content if authenticated and authorized

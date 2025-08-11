@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { body } from 'express-validator'
 import { zoneController } from '../controllers/zoneController'
-import { auth } from '../middleware/auth'
+import { authenticateToken } from '../middleware/auth.middleware'
 import { requireRole } from '../middleware/requireRole'
 
 const router = Router()
@@ -51,11 +51,11 @@ const updateZoneValidation = [
 ]
 
 // Routes
-router.get('/', auth, zoneController.getZones)
-router.get('/:id', auth, zoneController.getZoneById)
-router.get('/:zoneId/beds', auth, zoneController.getZoneBeds)
-router.post('/', auth, requireRole(['SUPER_ADMIN', 'MANAGER']), createZoneValidation, zoneController.createZone)
-router.put('/:id', auth, requireRole(['SUPER_ADMIN', 'MANAGER']), updateZoneValidation, zoneController.updateZone)
-router.delete('/:id', auth, requireRole(['SUPER_ADMIN']), zoneController.deleteZone)
+router.get('/', authenticateToken, zoneController.getZones)
+router.get('/:id', authenticateToken, zoneController.getZoneById)
+router.get('/:zoneId/beds', authenticateToken, zoneController.getZoneBeds)
+router.post('/', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER']), createZoneValidation, zoneController.createZone)
+router.put('/:id', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER']), updateZoneValidation, zoneController.updateZone)
+router.delete('/:id', authenticateToken, requireRole(['SUPER_ADMIN']), zoneController.deleteZone)
 
 export default router

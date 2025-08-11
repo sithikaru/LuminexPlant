@@ -30,11 +30,14 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Handle unauthorized access
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        window.location.href = '/login'
+      // Only redirect if this is not a login attempt
+      const isLoginRequest = error.config?.url?.includes('/auth/login')
+      if (!isLoginRequest && typeof window !== 'undefined') {
+        // Import the auth store and clear it
+        import('@/store/authStore').then(({ useAuthStore }) => {
+          useAuthStore.getState().clearAuth()
+        })
+        // Don't redirect immediately, let the auth logic handle it
       }
     }
     return Promise.reject(error)

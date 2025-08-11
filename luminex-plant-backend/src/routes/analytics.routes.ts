@@ -1,16 +1,16 @@
 import { Router } from 'express'
 import { analyticsController } from '../controllers/analyticsController'
-import { auth } from '../middleware/auth'
+import { authenticateToken } from '../middleware/auth.middleware'
 import { requireRole } from '../middleware/requireRole'
 
 const router = Router()
 
 // Routes
-router.get('/dashboard', auth, analyticsController.getDashboardStats)
-router.get('/zones', auth, requireRole(['SUPER_ADMIN', 'MANAGER']), analyticsController.getZoneUtilization)
-router.get('/species', auth, requireRole(['SUPER_ADMIN', 'MANAGER']), analyticsController.getSpeciesDistribution)
-router.get('/stages', auth, requireRole(['SUPER_ADMIN', 'MANAGER']), analyticsController.getStagePipeline)
-router.get('/growth', auth, requireRole(['SUPER_ADMIN', 'MANAGER']), analyticsController.getGrowthTrends)
-router.get('/production', auth, requireRole(['SUPER_ADMIN', 'MANAGER']), analyticsController.getProductionMetrics)
+router.get('/dashboard', authenticateToken, analyticsController.getDashboardStats)
+router.get('/zones', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER']), analyticsController.getZoneUtilization)
+router.get('/species', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER']), analyticsController.getSpeciesDistribution)
+router.get('/stages', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER']), analyticsController.getStagePipeline)
+router.get('/growth', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER']), analyticsController.getGrowthTrends)
+router.get('/production', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER']), analyticsController.getProductionMetrics)
 
 export default router

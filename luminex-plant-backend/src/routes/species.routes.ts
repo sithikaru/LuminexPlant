@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { body } from 'express-validator'
 import { speciesController } from '../controllers/speciesController'
-import { auth } from '../middleware/auth'
+import { authenticateToken } from '../middleware/auth.middleware'
 import { requireRole } from '../middleware/requireRole'
 
 const router = Router()
@@ -55,10 +55,10 @@ const updateSpeciesValidation = [
 ]
 
 // Routes
-router.get('/', auth, speciesController.getSpecies)
-router.get('/:id', auth, speciesController.getSpeciesById)
-router.post('/', auth, requireRole(['SUPER_ADMIN', 'MANAGER']), createSpeciesValidation, speciesController.createSpecies)
-router.put('/:id', auth, requireRole(['SUPER_ADMIN', 'MANAGER']), updateSpeciesValidation, speciesController.updateSpecies)
-router.delete('/:id', auth, requireRole(['SUPER_ADMIN']), speciesController.deleteSpecies)
+router.get('/', authenticateToken, speciesController.getSpecies)
+router.get('/:id', authenticateToken, speciesController.getSpeciesById)
+router.post('/', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER']), createSpeciesValidation, speciesController.createSpecies)
+router.put('/:id', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER']), updateSpeciesValidation, speciesController.updateSpecies)
+router.delete('/:id', authenticateToken, requireRole(['SUPER_ADMIN']), speciesController.deleteSpecies)
 
 export default router

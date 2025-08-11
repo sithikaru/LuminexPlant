@@ -51,8 +51,8 @@ if (process.env.NODE_ENV !== 'test') {
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
-// Rate limiting
-app.use('/api/', apiLimiter)
+// Rate limiting (disabled for development)
+// app.use('/api/', apiLimiter)
 
 // Health check route
 app.get('/health', (req, res) => {

@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { body } from 'express-validator'
 import { userController } from '../controllers/userController'
-import { auth } from '../middleware/auth'
+import { authenticateToken } from '../middleware/auth.middleware'
 import { requireRole } from '../middleware/requireRole'
 
 const router = Router()
@@ -80,11 +80,11 @@ const updateUserValidation = [
 ]
 
 // Routes
-router.get('/', auth, requireRole(['SUPER_ADMIN', 'MANAGER']), userController.getUsers)
-router.get('/stats', auth, requireRole(['SUPER_ADMIN', 'MANAGER']), userController.getUserStats)
-router.get('/:id', auth, requireRole(['SUPER_ADMIN', 'MANAGER']), userController.getUserById)
-router.post('/', auth, requireRole(['SUPER_ADMIN']), createUserValidation, userController.createUser)
-router.put('/:id', auth, requireRole(['SUPER_ADMIN']), updateUserValidation, userController.updateUser)
-router.delete('/:id', auth, requireRole(['SUPER_ADMIN']), userController.deleteUser)
+router.get('/', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER']), userController.getUsers)
+router.get('/stats', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER']), userController.getUserStats)
+router.get('/:id', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER']), userController.getUserById)
+router.post('/', authenticateToken, requireRole(['SUPER_ADMIN']), createUserValidation, userController.createUser)
+router.put('/:id', authenticateToken, requireRole(['SUPER_ADMIN']), updateUserValidation, userController.updateUser)
+router.delete('/:id', authenticateToken, requireRole(['SUPER_ADMIN']), userController.deleteUser)
 
 export default router

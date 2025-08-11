@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { body } from 'express-validator'
 import { batchController } from '../controllers/batchController'
-import { auth } from '../middleware/auth'
+import { authenticateToken } from '../middleware/auth.middleware'
 import { requireRole } from '../middleware/requireRole'
 
 const router = Router()
@@ -82,13 +82,13 @@ const updateStageValidation = [
 ]
 
 // Routes
-router.get('/', auth, batchController.getBatches)
-router.get('/:id', auth, batchController.getBatchById)
-router.post('/', auth, requireRole(['SUPER_ADMIN', 'MANAGER', 'FIELD_OFFICER']), createBatchValidation, batchController.createBatch)
-router.put('/:id', auth, requireRole(['SUPER_ADMIN', 'MANAGER', 'FIELD_OFFICER']), updateBatchValidation, batchController.updateBatch)
-router.post('/:id/stage', auth, requireRole(['SUPER_ADMIN', 'MANAGER', 'FIELD_OFFICER']), updateStageValidation, batchController.updateBatchStage)
-router.post('/:id/ready', auth, requireRole(['SUPER_ADMIN', 'MANAGER']), batchController.markBatchReady)
-router.post('/:id/deliver', auth, requireRole(['SUPER_ADMIN', 'MANAGER']), batchController.deliverBatch)
-router.delete('/:id', auth, requireRole(['SUPER_ADMIN', 'MANAGER']), batchController.deleteBatch)
+router.get('/', authenticateToken, batchController.getBatches)
+router.get('/:id', authenticateToken, batchController.getBatchById)
+router.post('/', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER', 'FIELD_OFFICER']), createBatchValidation, batchController.createBatch)
+router.put('/:id', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER', 'FIELD_OFFICER']), updateBatchValidation, batchController.updateBatch)
+router.post('/:id/stage', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER', 'FIELD_OFFICER']), updateStageValidation, batchController.updateBatchStage)
+router.post('/:id/ready', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER']), batchController.markBatchReady)
+router.post('/:id/deliver', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER']), batchController.deliverBatch)
+router.delete('/:id', authenticateToken, requireRole(['SUPER_ADMIN', 'MANAGER']), batchController.deleteBatch)
 
 export default router
