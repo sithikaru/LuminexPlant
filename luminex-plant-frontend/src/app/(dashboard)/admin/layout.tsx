@@ -1,5 +1,5 @@
 import { DashboardLayout } from '@/components/layouts/DashboardLayout'
-import { ProtectedRoute } from '@/components/layouts/ProtectedRoute'
+import ProtectedRoute from '@/components/layouts/ProtectedRoute'
 import { UserRole } from '@/types'
 
 export default function AdminLayout({

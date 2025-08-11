@@ -78,7 +78,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const handleLogout = () => {
     clearAuth()
     toast.success('Logged out successfully')
-    router.push('/auth/login')
+    router.push('/login')
   }
 
   const Sidebar = ({ mobile = false }: { mobile?: boolean }) => (

@@ -23,7 +23,7 @@ export default function ProtectedRoute({
 
   useEffect(() => {
     // Allow access to auth pages when not authenticated
-    if (pathname.startsWith('/auth/')) {
+    if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
       if (isAuthenticated) {
         // Redirect authenticated users away from auth pages
         router.push('/')
@@ -38,7 +38,7 @@ export default function ProtectedRoute({
     }
 
     // Check role permissions
-    if (isAuthenticated && allowedRoles.length > 0 && !hasPermission(allowedRoles)) {
+    if (isAuthenticated && allowedRoles && allowedRoles.length > 0 && !hasPermission(allowedRoles)) {
       // Redirect to appropriate dashboard based on user role
       switch (user?.role) {
         case UserRole.SUPER_ADMIN:
@@ -51,7 +51,7 @@ export default function ProtectedRoute({
           router.push('/officer')
           break
         default:
-          router.push('/auth/login')
+          router.push('/login')
       }
       return
     }
@@ -79,7 +79,7 @@ export default function ProtectedRoute({
     return null
   }
 
-  if (allowedRoles.length > 0 && !hasPermission(allowedRoles)) {
+  if (allowedRoles && allowedRoles.length > 0 && !hasPermission(allowedRoles)) {
     return null
   }
 
