@@ -94,7 +94,13 @@ export default function ManagerDashboard() {
   }
 
   const recentBatches = Array.isArray(batches?.data?.data?.data) ? batches.data.data.data.slice(0, 5) : []
-  const activeZones = Array.isArray(zones?.data?.data?.data) ? zones.data.data.data.filter((zone: any) => zone.isActive) : []
+  // Handle nested API response structure safely
+  const zonesData = (() => {
+    const data = zones?.data?.data?.data || zones?.data?.data || zones?.data || []
+    return Array.isArray(data) ? data : []
+  })()
+  
+  const activeZones = zonesData.filter((zone: any) => zone.isActive)
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">

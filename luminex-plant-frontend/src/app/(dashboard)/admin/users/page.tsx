@@ -45,11 +45,13 @@ export default function UsersPage() {
     },
   })
 
-  const filteredUsers = users?.data?.data?.filter((user: any) =>
-    user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || []
+  // Handle nested API response structure safely
+  const usersData = users?.data?.data || users?.data || []
+  const filteredUsers = Array.isArray(usersData) ? usersData.filter((user: any) =>
+    user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+  ) : []
 
   const getRoleColor = (role: string) => {
     switch (role) {
