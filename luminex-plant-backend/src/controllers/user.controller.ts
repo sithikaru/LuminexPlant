@@ -180,10 +180,11 @@ export const updateUser = asyncHandler(async (req: AuthRequest, res: Response): 
   })
 
   if (!existingUser) {
-    return res.status(404).json({
+    res.status(404).json({
       success: false,
       error: 'User not found'
     })
+    return
   }
 
   const updatedUser = await prisma.user.update({
@@ -234,15 +235,16 @@ export const updateUser = asyncHandler(async (req: AuthRequest, res: Response): 
   })
 })
 
-export const deleteUser = asyncHandler(async (req: AuthRequest, res: Response) => {
+export const deleteUser = asyncHandler(async (req: AuthRequest, res: Response): Promise<void> => {
   const { id } = req.params
 
   // Prevent deleting own account
   if (req.user?.id === id) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       error: 'Cannot delete your own account'
     })
+    return
   }
 
   const existingUser = await prisma.user.findUnique({
@@ -250,10 +252,11 @@ export const deleteUser = asyncHandler(async (req: AuthRequest, res: Response) =
   })
 
   if (!existingUser) {
-    return res.status(404).json({
+    res.status(404).json({
       success: false,
       error: 'User not found'
     })
+    return
   }
 
   // Check if user has dependencies
@@ -271,10 +274,11 @@ export const deleteUser = asyncHandler(async (req: AuthRequest, res: Response) =
   })
 
   if (dependencyCount?._count.createdBatches || dependencyCount?._count.measurements || dependencyCount?._count.auditLogs) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       error: 'Cannot delete user with existing batches, measurements, or audit logs. Deactivate instead.'
     })
+    return
   }
 
   await prisma.user.delete({
